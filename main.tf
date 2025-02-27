@@ -27,21 +27,11 @@ module "vpc" {
 }
 // EKS Module (using a well-known module from the Terraform Registry)
 module "eks" {
-  source          = "terraform-aws-modules/eks/aws"
-  version         = ">= 18.0.0"
+  source          = "./modules/eks"
   cluster_name    = var.cluster_name
-  cluster_version = "1.24"
+  cluster_version = "1.32"
   subnets         = module.vpc.private_subnet_ids
   vpc_id          = module.vpc.vpc_id
-  node_groups = {
-    default = {
-      desired_capacity = 2
-      max_capacity     = 3
-      min_capacity     = 1
-      instance_type    = "t3.medium"
-      subnets          = module.vpc.private_subnet_ids
-    }
-  }
 }
 // RDS Module for PostgreSQL
 module "rds" {
@@ -51,7 +41,6 @@ module "rds" {
   db_username        = var.db_username
   db_password        = var.db_password
   db_name            = var.db_name
-  aws_region         = var.aws_region
 }
 // Deploy cert-manager via Helm
 resource "helm_release" "cert_manager" {
