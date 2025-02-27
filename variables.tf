@@ -1,7 +1,7 @@
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-west-2"
+  default     = "ap-southeast-2"
 }
 
 variable "vpc_cidr" {
@@ -27,7 +27,7 @@ variable "availability_zones" {
 variable "cluster_name" {
   description = "EKS Cluster name"
   type        = string
-  default     = "my-eks-cluster"
+  default     = "test-cluster"
 }
 variable "db_username" {
   description = "RDS PostgreSQL username"
