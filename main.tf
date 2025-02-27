@@ -4,7 +4,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.83"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -15,7 +15,7 @@ terraform {
       version = "~> 2.0"
     }
   }
-
+}
   // VPC Module
 module "vpc" {
   source               = "./modules/vpc"
