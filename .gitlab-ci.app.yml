@@ -1,0 +1,55 @@
+# .gitlab-ci.app.yml
+stages:
+  - validate
+  - build
+  - test
+  - deploy
+
+# Validate YAML files
+yaml_lint:
+  stage: validate
+  image: cytopia/yamllint:latest
+  script:
+    - yamllint .
+  only:
+    - merge_requests
+    - master
+# Build Docker image
+build_app:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay2
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE:new-app .
+    - docker push $CI_REGISTRY_IMAGE:new-app
+  only:
+    - merge_requests
+    - master
+# SonarQube analysis
+sonarqube_scan:
+  stage: test
+  image: sonarsource/sonar-scanner-cli:latest
+  script:
+    - sonar-scanner \
+        -Dsonar.projectKey=new-app \
+        -Dsonar.sources=. \
+        -Dsonar.host.url=$SONAR_HOST_URL \
+        -Dsonar.login=$SONAR_TOKEN
+  only:
+    - merge_requests
+    - master
+# Deploy to Kubernetes
+deploy_app:
+  stage: deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl apply -f k8s/
+  only:
+    - master
+  environment:
+    name: production
+    url: http://your-app-domain.example.com

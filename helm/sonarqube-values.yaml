@@ -1,0 +1,10 @@
+service:
+  type: ClusterIP
+ingress:
+  enabled: true
+  ingressClassName: "nginx"
+  hosts:
+    - sonarqube.example.com  # Replace with your domain
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"

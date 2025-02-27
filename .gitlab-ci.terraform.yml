@@ -1,0 +1,39 @@
+image: hashicorp/terraform:latest
+
+stages:
+  - init
+  - validate
+  - plan
+  - apply
+variables:
+  TF_ROOT: "./terraform"
+  TF_IN_AUTOMATION: "true"
+  AWS_DEFAULT_REGION: "us-west-2"
+before_script:
+  - cd $TF_ROOT
+  - terraform --version
+terraform_init:
+  stage: init
+  script:
+    - terraform init
+  artifacts:
+    paths:
+      - .terraform/
+    expire_in: 1 hour
+terraform_validate:
+  stage: validate
+  script:
+    - terraform validate
+terraform_plan:
+  stage: plan
+  script:
+    - terraform plan -out=tfplan
+  artifacts:
+    paths:
+      - tfplan
+    expire_in: 1 hour
+terraform_apply:
+  stage: apply
+  when: manual
+  script:
+    - terraform apply -auto-approve tfplan
